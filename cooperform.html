@@ -33,17 +33,71 @@
     <div id="example"></div>
     <div id="editor">
 //add global variables here:
-var i = 0;
+var WaveStrand = function(wave, x) {
+    var t = 0;
+    var generate = false;
+    var self = {};
+    
+    var pinHeights = [];
+    for (var y = 0; y < xForm.y_size; y++) {
+        pinHeights.push(0);
+    }
+    
+    self.step = function() {
+        var next_value = 0;
+        if (generate) {
+            next_value = wave(t);
+        }
+        
+        pinHeights.pop();
+        pinHeights.unshift(next_value);
+        
+        for (var y = 0; y < xForm.y_size; y++) {
+            xForm.setPinHeight(x, xForm.y_size - y, pinHeights[y])
+        }
+        
+        t++;
+    }
+    
+    self.setGeneration = function(g) { generate = g; };
+    
+    return self;
+}
+
+var wavestrands = [
+    WaveStrand(function(t) { return 0.5 + 0.5 * Math.sin(t); }, 4),
+    WaveStrand(function(t) { return 0.5 + 0.5 * Math.sin(15*t); }, 8),
+    WaveStrand(function(t) { return 0.5 + 0.5 * Math.cos(50*t); }, 12),
+    WaveStrand(function(t) { return 0.5 + 0.5 * Math.cos(15*t); }, 16),
+    WaveStrand(function(t) { return 0.5 + 0.5 * Math.cos(t); }, 20)
+]
+
+var wave_map = {
+    81: wavestrands[0],
+    87: wavestrands[1],
+    69: wavestrands[2], 
+    82: wavestrands[3], 
+    84: wavestrands[4]
+}
+
+
+var body = document.getElementsByTagName("body")[0];
+body.onkeydown = function(e) {
+    if (e.keyCode in wave_map) {
+        wave_map[e.keyCode].setGeneration(true);
+    }
+};
+body.onkeyup = function(e) {
+    if (e.keyCode in wave_map) {
+        wave_map[e.keyCode].setGeneration(false);
+    }
+};
 
 //this function will be executed with each frame
 return function () {
-  i += 0.075;
-
-  for (var j = 0; j < xForm.x_size; j++) {
-    for (var k = 0; k < xForm.y_size; k++) {
-      xForm.setPinHeight(j,k,(0.5 + 0.5 * Math.cos(i + j * 0.5)));
+    for (var i = 0; i < wavestrands.length; i++) {
+        wavestrands[i].step();
     }
-  }
 };
     </div>
     <script type="x-shader/x-vertex" id="vertexShader">
