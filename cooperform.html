@@ -91,39 +91,49 @@ var body = document.getElementsByTagName("body")[0];
 body.onkeydown = function(e) {
     if (e.keyCode in wave_map) {
         wave_map[e.keyCode].setGeneration(true);
+        
+        if(e.keyCode == 81) {
+        
+            synth.noteOnWithFreq(440, 100);
+        }  
+        else if(e.keyCode == 87) {
+            synth.noteOnWithFreq(500, 100);    
+        }
+        else if(e.keyCode == 69) {
+            synth.noteOnWithFreq(600, 100);   
+        }
+        else if(e.keyCode == 82) {
+            synth.noteOnWithFreq(700, 100);   
+        }
+        else if(e.keyCode == 84) {
+            synth.noteOnWithFreq(800, 100); 
+        }
+        
+        
     }
 
     // timbre.js play a note
 
-    var midi = keydict.at(e.keyCode);
-    if (midi) {
-      var freq = midicps.at(midi);
-      synth.noteOnWithFreq(freq, 100);
-    }
+    
+    
 
 
 };
 body.onkeyup = function(e) {
     if (e.keyCode in wave_map) {
         wave_map[e.keyCode].setGeneration(false);
+       
+        
     }
     
 
     // timbre.js stop playing note
     
-    var midi = keydict.at(e.keyCode);
-    if (midi) {
-      synth.noteOff(midi, 100);
-    }
+    
 
 };
 
-//this function will be executed with each frame
-return function () {
-    for (var i = 0; i < wavestrands.length; i++) {
-        wavestrands[i].step();
-    }
-};
+//this function will be exec
     </div>
     <script type="x-shader/x-vertex" id="vertexShader">
         varying vec3 vWorldPosition;
