@@ -33,6 +33,12 @@
     <div id="example"></div>
     <div id="editor">
 //add global variables here:
+
+var synth = T("OscGen", {wave:"saw", mul:0.25}).play();
+
+var keydict = T("ndict.key");
+var midicps = T("midicps");
+
 var WaveStrand = function(wave, x) {
     var t = 0;
     var generate = false;
@@ -86,11 +92,30 @@ body.onkeydown = function(e) {
     if (e.keyCode in wave_map) {
         wave_map[e.keyCode].setGeneration(true);
     }
+
+    // timbre.js play a note
+
+    var midi = keydict.at(e.keyCode);
+    if (midi) {
+      var freq = midicps.at(midi);
+      synth.noteOnWithFreq(freq, 100);
+    }
+
+
 };
 body.onkeyup = function(e) {
     if (e.keyCode in wave_map) {
         wave_map[e.keyCode].setGeneration(false);
     }
+    
+
+    // timbre.js stop playing note
+    
+    var midi = keydict.at(e.keyCode);
+    if (midi) {
+      synth.noteOff(midi, 100);
+    }
+
 };
 
 //this function will be executed with each frame
@@ -125,6 +150,7 @@ return function () {
     <script src="js/3d/Box.js"></script>
     <script src="js/utils/dat.gui.min.js"></script>
     <script src="js/utils/sockets.utils.js"></script>
+    <script src="js/timbre/timbre.js"></script>
     <script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 
     <script>
